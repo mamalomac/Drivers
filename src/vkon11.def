@@ -1,0 +1,5 @@
+LIBRARY vkon11
+EXPORTS
+    vk_icdNegotiateLoaderICDInterfaceVersion
+    vk_icdGetInstanceProcAddr
+    vk_icdGetPhysicalDeviceProcAddr

@@ -1,0 +1,35 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -A x64
+      - name: Build
+        run: cmake --build build --config Release --parallel
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force package | Out-Null
+          Copy-Item build/Release/vkon11.dll, build/tests/Release/selftest.exe package/
+          Copy-Item install/vkon11_icd.json, install/install.bat, install/uninstall.bat, install/selftest.bat package/
+      # The hosted runner has no GPU; this exercises the driver on Microsoft's
+      # software Direct3D 11 adapter with the real HLSL compiler.
+      - name: Self-test
+        shell: pwsh
+        run: |
+          cd package
+          $env:VKON11_LOG = "1"
+          ./selftest.exe vkon11.dll
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vkon11-windows-x64
+          path: package

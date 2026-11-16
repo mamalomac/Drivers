@@ -1,0 +1,5 @@
+build/
+build-*/
+third_party/
+*.bmp
+*.tmp

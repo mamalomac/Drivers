@@ -1,0 +1,6 @@
+add_executable(selftest selftest.cpp)
+target_include_directories(selftest PRIVATE ${VULKAN_HEADERS_DIR}/include)
+if(MINGW)
+  target_link_options(selftest PRIVATE -static -static-libgcc -static-libstdc++)
+endif()
+add_dependencies(selftest vkon11)
