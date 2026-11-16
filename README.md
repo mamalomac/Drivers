@@ -63,6 +63,7 @@ Only 64-bit programs are supported; there is no 32-bit build.
 - Buffer and image copies in every direction, blit, clear-image, fill/update buffer
 - Window output through `VK_KHR_surface`, `VK_KHR_win32_surface`, `VK_KHR_swapchain`
 - Negative viewport height (`VK_KHR_maintenance1`)
+- `gl_InstanceIndex`, and compute shaders writing a storage buffer and a storage image
 
 **Implemented but not exercised by any test yet (expect bugs):**
 
@@ -71,8 +72,6 @@ Only 64-bit programs are supported; there is no 32-bit build.
 - Dynamic uniform buffers, separate samplers and images, specialization constants
 - Multiple subpasses, secondary command buffers, multi-draw-indirect, `vkCmdResolveImage`
 - Occlusion queries
-- Compute shaders with storage buffers and storage images, `gl_InstanceIndex`
-  (written, but the shader compiler available in the test environment cannot build them)
 
 **Not implemented:**
 
@@ -87,12 +86,14 @@ swizzles on image views are ignored, and depth images cannot be uploaded from a 
 
 ## Test status
 
-The self-test (`tests/selftest.cpp`) renders off-screen and compares pixels. It was run here
-with the Windows build under Wine, where Direct3D 11 is itself emulated on a software renderer:
-**32 checks pass, 0 fail, 3 tests skipped.** The three skipped tests (`gl_InstanceIndex`, and both
-compute tests) need HLSL features that Wine's built-in shader compiler lacks; they should run on
-real Windows, where Microsoft's compiler is used. The GitHub Actions workflow builds with MSVC
-and runs the full self-test on Microsoft's software Direct3D adapter.
+The self-test (`tests/selftest.cpp`) renders off-screen and compares pixels. It has been run in
+two places:
+
+- **Real Windows, software Direct3D** (GitHub Actions: MSVC build, Microsoft's "Basic Render
+  Driver" adapter, Microsoft's HLSL compiler): 40 checks pass, 0 fail, 0 skipped.
+- **Wine on Linux** (MinGW build, Direct3D 11 emulated on a software renderer): 32 checks pass,
+  0 fail, 3 tests skipped because Wine's built-in shader compiler cannot build them. The window
+  and swapchain test was also run here and passes.
 
 It has **not** been run on an HD 6570 or any other real GPU. Expect bugs. If `selftest.bat`
 reports failures on your card, the output lines are the bug report.
